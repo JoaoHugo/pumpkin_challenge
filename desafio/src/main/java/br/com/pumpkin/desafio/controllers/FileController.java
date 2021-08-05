@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
 @RestController
@@ -21,7 +22,8 @@ public class FileController {
     }
 
     @GetMapping(path = {"/{id}"}, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public byte[] getFile(@PathVariable long id){
+    public byte[] getFile(@PathVariable long id, HttpServletResponse response){
+        response.setHeader("Content-Disposition", "attachment; filename=" + "output.csv");
         return fileService.getFile(id);
     }
 

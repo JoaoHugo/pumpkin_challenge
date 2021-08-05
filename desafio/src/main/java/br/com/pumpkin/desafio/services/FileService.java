@@ -4,12 +4,11 @@ import br.com.pumpkin.desafio.models.File;
 import br.com.pumpkin.desafio.models.Register;
 import br.com.pumpkin.desafio.repositories.FileRepository;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileWriter;
-import java.io.Reader;
-import java.nio.file.Files;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,22 +27,25 @@ public class FileService {
             File file = fileRepository.findById(id).get();
 
             String header = file.getColumns();
-
-            FileWriter myWriter = new FileWriter("output.csv");
-            myWriter.write(header + "\n");
+            List<String[]> lines = new ArrayList<>();
+            lines.add(header.split(","));
 
             for (Register r : file.getRegister()) {
                 String formattedRegister = r.getRegister();
                 formattedRegister = formattedRegister + ",";
-                myWriter.write(formattedRegister + "\n");
+                lines.add(formattedRegister.split(","));
             }
 
-            myWriter.close();
-            System.out.println("Successfully wrote to the file.");
-            java.io.File returnedFile = new java.io.File("output.csv");
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            OutputStreamWriter streamWriter = new OutputStreamWriter(stream);
+            CSVWriter csvWriter = new CSVWriter(streamWriter);
 
-            System.out.println(returnedFile.getName());
-            return Files.readAllBytes(returnedFile.toPath());
+            csvWriter.writeAll(lines);
+            csvWriter.flush();
+
+            System.out.println("Successfully wrote to the file.");
+
+            return stream.toByteArray();
         }catch (Exception ex){
             System.out.println("Exception found: \n");
             ex.printStackTrace();
