@@ -4,6 +4,7 @@ import br.com.pumpkin.desafio.models.File;
 import br.com.pumpkin.desafio.models.Register;
 import br.com.pumpkin.desafio.repositories.FileRepository;
 import com.opencsv.CSVReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileWriter;
@@ -17,6 +18,7 @@ public class FileService {
 
     private final FileRepository fileRepository;
 
+    @Autowired
     public FileService(FileRepository fileRepository) {
         this.fileRepository = fileRepository;
     }
@@ -45,7 +47,7 @@ public class FileService {
         }catch (Exception ex){
             System.out.println("Exception found: \n");
             ex.printStackTrace();
-            return new byte [4];
+            return null;
         }
     }
 
@@ -82,7 +84,7 @@ public class FileService {
 
     public List<String[]> readAll(Reader reader) throws Exception {
         CSVReader csvReader = new CSVReader(reader);
-        List<String[]> list = new ArrayList<>();
+        List<String[]> list;
         list = csvReader.readAll();
 
         reader.close();
